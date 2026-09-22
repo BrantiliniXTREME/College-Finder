@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>College Matcher</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef2f7;--card:#fff;--ink:#14213d;--mut:#55627a;--line:#d5dce8;--acc:#14213d;--gold:#f2b134;--onacc:#fff;--reach:#a4361f;--match:#1d6b45;--safe:#2a5aa8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1424;--card:#16203a;--ink:#eaf0fb;--mut:#9fadc6;--line:#2a375a;--acc:#f2b134;--onacc:#14213d;--reach:#ff8f78;--match:#5fd39a;--safe:#8db7ff}}
+:root[data-theme="dark"]{--bg:#0d1424;--card:#16203a;--ink:#eaf0fb;--mut:#9fadc6;--line:#2a375a;--acc:#f2b134;--onacc:#14213d;--reach:#ff8f78;--match:#5fd39a;--safe:#8db7ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 clamp(2rem,7vw,3rem)/1.05 Georgia,"Times New Roman",serif;margin:8px 0 6px;letter-spacing:-.02em}
+h2{font:700 1.25rem Georgia,serif;margin:0 0 10px}
+.sub{color:var(--mut);margin:0 0 20px;max-width:56ch}
+form,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend,label{font-weight:600;font-size:.92rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+input,select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);margin-top:4px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.cls{display:grid;grid-template-columns:1fr 84px 88px 34px;gap:8px;margin-bottom:8px}
+.hd{font-size:.8rem;color:var(--mut);margin-bottom:2px}
+@media(max-width:520px){.cls{grid-template-columns:1fr 72px 80px 34px;gap:6px}}
+.cls input,.cls select{margin:0}
+button{font:inherit;cursor:pointer;border-radius:8px}
+.x{border:1px solid var(--line);background:none;color:var(--mut)}
+.link{background:none;border:0;color:var(--safe);padding:4px 0;font-weight:600}
+.go{width:100%;padding:14px;border:0;background:var(--acc);color:var(--onacc);font-weight:700;font-size:1.05rem;margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips label{font-weight:500;border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;background:var(--bg)}
+.chips input{width:auto;margin:0 6px 0 0}
+.chips label:has(input:checked){background:var(--gold);color:#14213d;border-color:var(--gold);font-weight:600}
+.hint{color:var(--mut);font-size:.85rem;margin:4px 0 0}
+#err{color:var(--reach);font-weight:600;margin:10px 0 0}
+#out{margin-top:24px}
+.best{border:2px solid var(--gold);border-radius:14px;padding:20px;background:var(--card)}
+.best .n{font:700 clamp(1.7rem,6vw,2.3rem)/1.1 Georgia,serif;margin:4px 0}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:99px;padding:2px 10px;border:1px solid currentColor}
+.reach{color:var(--reach)}.match{color:var(--match)}.safe{color:var(--safe)}
+.list{margin-top:18px}
+.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.item small{color:var(--mut);display:block}
+</style></head>
+<body><main>
+<h1>Find your best college</h1>
+<p class="sub">Tell us about your school year, classes and grades. We'll match you with the college whose typical students look most like you. Works for grades 6–12.</p>
+
+<form id="f" novalidate>
+<div class="row">
+  <div><label for="name">Name</label><input id="name" autocomplete="given-name" required></div>
+  <div><label for="grade">Grade level</label><select id="grade"><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option selected>11</option><option>12</option></select></div>
+</div>
+<div class="row">
+  <div><label for="gender">Gender</label><select id="gender"><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select>
+  <p class="hint">Only used to include women's or men's colleges.</p></div>
+  <div><label for="gpa">GPA (optional)</label><input id="gpa" type="number" step="0.01" min="0" max="4.5" placeholder="Unweighted, 4.0 scale">
+  <p class="hint">Leave blank and we'll work it out from your grades.</p></div>
+</div>
+<div class="row">
+  <div><label for="stype">Your current school</label><select id="stype"><option value="public">Public school</option><option value="private">Private school</option></select></div>
+</div>
+<div class="row">
+  <div><label for="ctype">College type</label><select id="ctype"><option value="any">Public or private</option><option value="public">Public only</option><option value="private">Private only</option></select></div>
+  <div><label for="state">State (optional)</label><select id="state"><option value="">Anywhere</option></select>
+  <label class="hint" style="font-weight:400;display:block;margin-top:6px"><input type="checkbox" id="only" style="width:auto;margin:0 6px 0 0">Only colleges in this state</label></div>
+</div>
+<fieldset><legend>Your grades</legend>
+<p class="hint" style="margin:2px 0 8px">Type each grade as a percent, like 100 or 99. Change Level if a class is above your grade, like 8th grade math in 6th grade. Rename, add or remove classes as needed.</p>
+<div class="cls hd"><span>Class</span><span>Grade %</span><span>Level</span><span></span></div>
+<div id="cls"></div>
+<button type="button" class="link" id="add">+ Add a class</button></fieldset>
+<fieldset><legend>Are you taking AP classes?</legend>
+<div class="row" style="margin:6px 0 0"><select id="ap" aria-label="AP classes"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div id="apbox" hidden><p class="hint">Pick every AP you take or have taken.</p><div class="chips" id="chips"></div></div></fieldset>
+<button class="go">Pick my college</button>
+<div id="err" role="alert"></div>
+</form>
+<div id="out" aria-live="polite"></div>
+</main>
+<script>
+const pt=p=>p>=93?4:p>=90?3.7:p>=87?3.3:p>=83?3:p>=80?2.7:p>=77?2.3:p>=73?2:p>=70?1.7:p>=65?1:0;
+const APS=["Biology","Calculus AB","Calculus BC","Chemistry","Computer Science A","English Language","English Literature","Environmental Science","Macroeconomics","Microeconomics","Physics 1","Psychology","Spanish","Statistics","US Government","US History","World History","Art History"];
+const C=[["MIT","Cambridge, MA",98,1,""],["Stanford University","Stanford, CA",98,0,""],["Harvard University","Cambridge, MA",98,0,""],["Princeton University","Princeton, NJ",97,0,""],["Yale University","New Haven, CT",97,0,""],["Caltech","Pasadena, CA",97,1,""],["Duke University","Durham, NC",95,1,""],["Northwestern University","Evanston, IL",94,1,""],["Johns Hopkins University","Baltimore, MD",94,1,""],["Rice University","Houston, TX",94,1,""],["Vanderbilt University","Nashville, TN",94,1,""],["Carnegie Mellon University","Pittsburgh, PA",92,1,""],["Cornell University","Ithaca, NY",92,1,""],["University of Notre Dame","Notre Dame, IN",91,1,""],["UC Berkeley","Berkeley, CA",91,1,""],["UCLA","Los Angeles, CA",90,1,""],["Georgia Tech","Atlanta, GA",90,1,""],["University of Michigan","Ann Arbor, MI",89,1,""],["University of Virginia","Charlottesville, VA",89,1,""],["William & Mary","Williamsburg, VA",88,1,""],["Wellesley College","Wellesley, MA",88,0,"F"],["University of Texas at Austin","Austin, TX",86,1,""],["Smith College","Northampton, MA",84,0,"F"],["Boston University","Boston, MA",84,1,""],["UW-Madison","Madison, WI",84,1,""],["University of Florida","Gainesville, FL",82,1,""],["Virginia Tech","Blacksburg, VA",78,1,""],["Purdue University","West Lafayette, IN",78,1,""],["University of Georgia","Athens, GA",78,1,""],["Ohio State University","Columbus, OH",76,1,""],["NC State University","Raleigh, NC",76,1,""],["Penn State","University Park, PA",74,1,""],["Texas A&M University","College Station, TX",74,1,""],["University of Delaware","Newark, DE",70,1,""],["Spelman College","Atlanta, GA",68,0,"F"],["Morehouse College","Atlanta, GA",62,0,"M"],["George Mason University","Fairfax, VA",62,1,""],["Virginia Commonwealth University","Richmond, VA",62,1,""],["Arizona State University","Tempe, AZ",60,1,""],["Iowa State University","Ames, IA",60,1,""],["University of Alabama","Tuscaloosa, AL",55,1,""],["University of Arizona","Tucson, AZ",55,1,""],["Old Dominion University","Norfolk, VA",50,1,""],["Community college, then transfer","Near you",20,1,""],["New York University","New York, NY",92,0,""],["University of Southern California","Los Angeles, CA",93,1,""],["University of Illinois Urbana-Champaign","Champaign, IL",88,1,""],["University of Maryland","College Park, MD",88,1,""],["University of Washington","Seattle, WA",88,1,""],["University of Miami","Coral Gables, FL",86,1,""],["Clemson University","Clemson, SC",84,1,""],["Rutgers University","New Brunswick, NJ",82,1,""],["University of Pittsburgh","Pittsburgh, PA",82,1,""],["Cal Poly San Luis Obispo","San Luis Obispo, CA",82,1,""],["University of Minnesota","Minneapolis, MN",80,1,""],["University of Colorado Boulder","Boulder, CO",78,1,""],["UMass Amherst","Amherst, MA",78,1,""],["Syracuse University","Syracuse, NY",78,1,""],["University of Connecticut","Storrs, CT",78,1,""],["Indiana University","Bloomington, IN",76,1,""],["Baylor University","Waco, TX",76,1,""],["Michigan State University","East Lansing, MI",74,1,""],["University of Tennessee","Knoxville, TN",66,1,""],["University of South Carolina","Columbia, SC",66,1,""],["Oregon State University","Corvallis, OR",62,1,""],["University of Kentucky","Lexington, KY",60,1,""],["Liberty University","Lynchburg, VA",50,1,""]];
+const PUB=new Set(["UC Berkeley","UCLA","Georgia Tech","University of Michigan","University of Virginia","William & Mary","University of Texas at Austin","UW-Madison","University of Florida","Virginia Tech","Purdue University","University of Georgia","Ohio State University","NC State University","Penn State","Texas A&M University","University of Delaware","George Mason University","Virginia Commonwealth University","Arizona State University","Iowa State University","University of Alabama","University of Arizona","Old Dominion University","Community college, then transfer","University of Illinois Urbana-Champaign","University of Maryland","University of Washington","Clemson University","Rutgers University","University of Pittsburgh","Cal Poly San Luis Obispo","University of Minnesota","University of Colorado Boulder","UMass Amherst","University of Connecticut","Indiana University","Michigan State University","University of Tennessee","University of South Carolina","Oregon State University","University of Kentucky"]);
+const ST='AL:Alabama,AK:Alaska,AZ:Arizona,AR:Arkansas,CA:California,CO:Colorado,CT:Connecticut,DE:Delaware,DC:Washington DC,FL:Florida,GA:Georgia,HI:Hawaii,ID:Idaho,IL:Illinois,IN:Indiana,IA:Iowa,KS:Kansas,KY:Kentucky,LA:Louisiana,ME:Maine,MD:Maryland,MA:Massachusetts,MI:Michigan,MN:Minnesota,MS:Mississippi,MO:Missouri,MT:Montana,NE:Nebraska,NV:Nevada,NH:New Hampshire,NJ:New Jersey,NM:New Mexico,NY:New York,NC:North Carolina,ND:North Dakota,OH:Ohio,OK:Oklahoma,OR:Oregon,PA:Pennsylvania,RI:Rhode Island,SC:South Carolina,SD:South Dakota,TN:Tennessee,TX:Texas,UT:Utah,VT:Vermont,VA:Virginia,WA:Washington,WV:West Virginia,WI:Wisconsin,WY:Wyoming'.split(",").map(x=>x.split(":"));
+
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const CORE=["English","Math","Science","History","Band","Bible","Computer"],HS=["Foreign Language","PE / Health","Elective"];
+function addRow(n="",v="",l=+$("grade").value){const d=document.createElement("div");d.className="cls";
+ d.innerHTML='<input placeholder="Class (e.g. Math)" aria-label="Class name" value="'+esc(n)+'"><input type="number" min="0" max="100" step="0.1" inputmode="decimal" placeholder="100" aria-label="Grade percent" value="'+v+'"><select aria-label="Class level" title="Grade level of this class">'+[6,7,8,9,10,11,12].map(k=>'<option value="'+k+'"'+(k==l?" selected":"")+'>'+k+'th</option>').join("")+'</select><button type="button" class="x" aria-label="Remove class">×</button>';
+ d.querySelector(".x").onclick=()=>d.remove();$("cls").appendChild(d)}
+let prev=11;
+function build(){const g=+$("grade").value,old=[...document.querySelectorAll("#cls .cls")].map(r=>{const[n,v]=r.querySelectorAll("input"),l=+r.querySelector("select").value;return{n:n.value.trim(),v:v.value,l:l!==prev?l:g}});
+ $("cls").innerHTML="";const names=g>=9?CORE.concat(HS):CORE,low=names.map(x=>x.toLowerCase());
+ names.forEach(n=>{const k=old.find(o=>o.n.toLowerCase()===n.toLowerCase())||{};addRow(n,k.v||"",k.l||g)});
+ old.filter(o=>o.n&&!low.includes(o.n.toLowerCase())).forEach(o=>addRow(o.n,o.v,o.l));prev=g}
+$("grade").addEventListener("change",build);build();
+$("state").innerHTML+=ST.map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join("");
+$("add").onclick=()=>addRow();
+$("chips").innerHTML=APS.map(a=>'<label><input type="checkbox" value="'+a+'">'+a+'</label>').join("");
+$("ap").onchange=e=>$("apbox").hidden=e.target.value!=="yes";
+
+function tier(d){return d>8?["Reach","reach"]:d<-10?["Safety","safe"]:["Match","match"]}
+function run(e){e.preventDefault();$("err").textContent="";
+ const name=$("name").value.trim();
+ if(!name){$("err").textContent="Enter your name to continue.";return}
+ const rows=[],adv=[],g0=+$("grade").value;let bad=false;
+ document.querySelectorAll("#cls .cls").forEach(r=>{const v=r.querySelectorAll("input")[1];if(v.value==="")return;const p=parseFloat(v.value);
+  if(isNaN(p)||p<0||p>100){bad=true;return}rows.push(pt(p));if(+r.querySelector("select").value>g0)adv.push(1)});
+ if(bad){$("err").textContent="Grades should be percents from 0 to 100.";return}
+ let gpa=parseFloat($("gpa").value),src="your GPA";
+ if(isNaN(gpa)){if(!rows.length){$("err").textContent="Enter at least one grade or a GPA.";return}
+  gpa=rows.reduce((a,b)=>a+b,0)/rows.length;src="your grades"}
+ if(gpa<0||gpa>4.5){$("err").textContent="GPA should be between 0 and 4.5.";return}
+ gpa=Math.min(gpa,4);
+ const aps=$("ap").value==="yes"?[...document.querySelectorAll("#chips input:checked")].length:0;
+ const idx=gpa/4*80+Math.min(aps+adv.length*.5,6)*3.3, g=$("gender").value, grade=+$("grade").value;
+ const ty=$("ctype").value,st=$("state").value,only=$("only").checked;
+ const inSt=c=>!!st&&c[1].endsWith(", "+st),pub=c=>PUB.has(c[0]);
+ const list=C.filter(c=>(!c[4]||(c[4]==="F"&&g==="Female")||(c[4]==="M"&&g==="Male"))&&(ty==="any"||(ty==="public")===pub(c))&&(!only||!st||inSt(c)||c[1]==="Near you")).map(c=>{
+  const d=c[2]-(idx+2);return{c,d,s:100-Math.abs(d)*(d>0?1.6:1)+(aps&&c[3]?3:0)+(inSt(c)?6+(pub(c)?3:0):0)}}).sort((a,b)=>b.s-a.s);
+ if(!list.length){$("err").textContent="No colleges fit those choices. Try turning off a filter.";return}
+ const best=list[0],rest=list.slice(1);
+ const reach=rest.filter(x=>x.d>8).sort((a,b)=>a.c[2]-b.c[2]).slice(0,2);
+ const safe=rest.filter(x=>x.d<-10).sort((a,b)=>b.c[2]-a.c[2]).slice(0,2);
+ const also=rest.filter(x=>x.d<=8&&x.d>=-10).slice(0,2);
+ const t=tier(best.d);
+ const why=`With ${gpa.toFixed(2)} from ${src}${aps?` and ${aps} AP class${aps>1?"es":""}`:""}${adv.length?`${aps?",":" and"} ${adv.length} advanced class${adv.length>1?"es":""}`:""}, your profile lines up closely with ${best.c[0]}'s typical students.`+(aps&&best.c[3]?" It also awards credit for strong AP scores.":"")+(inSt(best.c)?" It is also in your state.":"");
+ const line=x=>{const [l,k]=tier(x.d);return`<div class="item"><div>${esc(x.c[0])}<small>${x.c[1]}${x.c[1]==="Near you"?"":pub(x.c)?" (public)":" (private)"}</small></div><span class="tag ${k}">${l}</span></div>`};
+ const block=(h,a)=>a.length?`<div class="card list"><h2>${h}</h2>${a.map(line).join("")}</div>`:"";
+ const early=grade<=8?`<p class="hint" style="margin-top:14px">You're early. Colleges look at grades 9–12, so treat this as a starting snapshot and check back each year.</p>`:"";
+ $("out").innerHTML=`<div class="best"><span class="tag ${t[1]}">${t[0]}</span><p class="hint" style="margin:10px 0 0">${esc(name)}, your best fit is</p><div class="n">${esc(best.c[0])}</div><div class="hint">${best.c[1]}${best.c[1]==="Near you"?"":pub(best.c)?" (public)":" (private)"}</div><p>${why}</p></div>`
+  +block("Also a good match",also)+block("Reach: aim higher",reach)+block("Safety: likely admit",safe)+early
+  +`<p class="hint" style="margin-top:14px">Profile used: grade ${grade}, ${$("stype").value} school, GPA ${gpa.toFixed(2)}, ${aps} AP class${aps===1?"":"es"}${adv.length?`, ${adv.length} advanced`:""}.</p><p class="hint">This is a rough estimate from grades and AP count only. Real admissions also weigh test scores, essays and activities. Check each college's own admissions page.</p>`;
+ $("out").scrollIntoView({behavior:"smooth"})}
+$("f").addEventListener("submit",run);
+</script></body></html>
