@@ -1,4 +1,4 @@
-<!doctype html>
+document.write(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>College Matcher</title>
@@ -140,4 +140,4 @@ function run(e){e.preventDefault();$("err").textContent="";
   +`<p class="hint" style="margin-top:14px">Profile used: grade ${grade}, ${$("stype").value} school, GPA ${gpa.toFixed(2)}, ${aps} AP class${aps===1?"":"es"}${adv.length?`, ${adv.length} advanced`:""}.</p><p class="hint">This is a rough estimate from grades and AP count only. Real admissions also weigh test scores, essays and activities. Check each college's own admissions page.</p>`;
  $("out").scrollIntoView({behavior:"smooth"})}
 $("f").addEventListener("submit",run);
-</script></body></html>
+</script></body></html>`)
