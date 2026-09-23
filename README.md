@@ -1,4 +1,4 @@
-# College Finder
+# **College Finder**
 College Finder is a website made by me (a sixth grader) for a project.
 
 Steps to use:
