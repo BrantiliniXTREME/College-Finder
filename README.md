@@ -6,3 +6,5 @@ Steps to use:
 3. Enter in your grades (mandatory) and enter your GPA (optional)
 4. Click find college
 5. It will tell you the most prestigious college that you will most likely get accepted into
+Website: https://brantilinixtreme.github.io/collegefinder/ 
+README and view code enabled
